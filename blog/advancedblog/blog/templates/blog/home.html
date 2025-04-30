@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Anasayfa{% endblock %}
+
+{% block content %}
+    {% for post in posts %}
+        <article class="card mb-4">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title">
+                    <a href="{% url 'post-detail' post.pk %}" class="text-decoration-none">{{ post.title }}</a>
+                </h2>
+                <p class="card-text">{{ post.content|truncatewords:30 }}</p>
+                <a href="{% url 'post-detail' post.pk %}" class="btn btn-primary">Devamını Oku</a>
+            </div>
+            <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between">
+                    <small>{{ post.date_posted|date:"F d, Y" }}</small>
+                    <small>Yazar: {{ post.author.username }}</small>
+                </div>
+            </div>
+        </article>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn btn-outline-primary btn-sm">&laquo; ilk</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary btn-sm">önceki</a>
+            {% endif %}
+
+            <span class="current">
+                Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary btn-sm">sonraki</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary btn-sm">son &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endblock %}

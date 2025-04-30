@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}Gönderiyi Düzenle{% else %}Yeni Gönderi{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-section">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                {% if object %}Gönderiyi Düzenle{% else %}Yeni Gönderi Oluştur{% endif %}
+            </legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group mt-3">
+            <button class="btn btn-outline-info" type="submit">
+                {% if object %}Güncelle{% else %}Oluştur{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'post-detail' object.id %}{% else %}{% url 'blog-home' %}{% endif %}" 
+               class="btn btn-outline-secondary">
+                İptal
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

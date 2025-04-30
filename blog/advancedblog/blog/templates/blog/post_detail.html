@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <article class="card">
+        {% if post.image %}
+            <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+        {% endif %}
+        <div class="card-body">
+            <h1 class="card-title">{{ post.title }}</h1>
+            <p class="card-text">{{ post.content }}</p>
+        </div>
+        <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between">
+                <small>{{ post.date_posted|date:"F d, Y" }}</small>
+                <small>Yazar: {{ post.author.username }}</small>
+            </div>
+            {% if post.author == user %}
+                <div class="mt-2">
+                    <a href="{% url 'post-update' post.pk %}" class="btn btn-secondary btn-sm">Güncelle</a>
+                    <a href="{% url 'post-delete' post.pk %}" class="btn btn-danger btn-sm">Sil</a>
+                </div>
+            {% endif %}
+        </div>
+    </article>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            Yorumlar
+        </div>
+        <div class="card-body">
+            {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'add-comment' post.pk %}">
+                    {% csrf_token %}
+                    {{ comment_form|crispy }}
+                    <button type="submit" class="btn btn-primary mt-2">Yorum Yap</button>
+                </form>
+            {% else %}
+                <p>Yorum yapmak için <a href="{% url 'login' %}">giriş yapmalısınız</a>.</p>
+            {% endif %}
+
+            <hr>
+
+            {% for comment in post.comments.all %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ comment.author.username }}</strong>
+                        <small class="text-muted">{{ comment.created_date|timesince }} önce</small>
+                    </div>
+                    <p>{{ comment.text }}</p>
+                </div>
+                {% if not forloop.last %}<hr>{% endif %}
+            {% empty %}
+                <p>Henüz yorum yok. İlk yorumu siz yapın!</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
